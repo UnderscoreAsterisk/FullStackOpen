@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom'
 
 const Button = ({clickHandler, text}) => <button onClick={clickHandler}>{text}</button>
 
-const Display = ({label, value}) => <p>{label} {value}</p>
-
 const Stat = ({label, value}) => <tr><td>{label}</td> <td>{value}</td></tr>
 
 const Statistics = ({good, neutral, bad}) => {

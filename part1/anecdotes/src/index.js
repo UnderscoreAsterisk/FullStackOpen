@@ -11,12 +11,18 @@ const App = (props) => {
     setVotes(newVotes)
   }
 
+  const maxId = [].reduce.call(votes, (m, c, i, arr) => c > arr[m] ? i : m, 0)
+
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{props.anecdotes[selected]}</p>
       <p>has {votes[selected]} votes</p>
       <button onClick={upvote}>vote</button>
       <button onClick={()=>{setSelected(Math.floor(Math.random()*anecdotes.length))}}>Next Anecdote</button>
+      <h1>Anecdote with the most votes</h1>
+      <p>{props.anecdotes[maxId]}</p>
+      <p>has {votes[maxId]} votes</p>
     </div>
   )
 }

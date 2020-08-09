@@ -5,6 +5,8 @@ const Button = ({clickHandler, text}) => <button onClick={clickHandler}>{text}</
 
 const Display = ({label, value}) => <p>{label} {value}</p>
 
+const Stat = ({label, value}) => <tr><td>{label}</td> <td>{value}</td></tr>
+
 const Statistics = ({good, neutral, bad}) => {
   let total = good+neutral+bad
   let score = (good - bad)/total
@@ -17,12 +19,12 @@ const Statistics = ({good, neutral, bad}) => {
   else
     return (
       <div>
-        <Display label="Good" value={good}/>
-        <Display label="Neutral" value={neutral}/>
-        <Display label="Bad" value={bad}/>
-        <Display label="all" value={total}/>
-        <Display label="Average" value={score}/>
-        <p>Positive {pct} %</p>
+        <Stat label="Good" value={good}/>
+        <Stat label="Neutral" value={neutral}/>
+        <Stat label="Bad" value={bad}/>
+        <Stat label="all" value={total}/>
+        <Stat label="Average" value={score}/>
+        <Stat label="Positive" value={pct + ' %'}/>
       </div>
     )
 } 

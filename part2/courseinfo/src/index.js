@@ -1,47 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-const Header = ({ course }) => {
-  return (
-    <h1>{course.name}</h1>
-  )
-}
-
-const Total = ({ course }) => {
-  const sum = course.parts.reduce((prev, cur) => prev + cur.exercises, 0)
-  return(
-    <p>Number of exercises {sum}</p>
-  ) 
-}
-
-const Part = (props) => {
-  return (
-    <p>
-      {props.part.name} {props.part.exercises}
-    </p>    
-  )
-}
-
-const Content = ({ course }) => {
-  return (
-    <div>
-      {course.parts.map(
-        (part, i) => <Part key={i} part={part}/>
-      )}
-    </div>
-  )
-}
-
-const Course = ({course}) => (
-  <div>
-      <Header course={course} />
-      <Content course={course} />
-      <Total course={course} />
-  </div>
-)
+import Course from './components/Course'
 
 const App = () => {
-  const course = {
+  const courses = [
+    {
     name: 'Half Stack application development',
     parts: [
       {
@@ -61,10 +24,26 @@ const App = () => {
         exercises: 5
       }
     ]
+  },
+  {
+  name: 'Node.JS',
+  parts: [
+    {
+      name: 'Routing',
+      exercises: 3
+    },
+    {
+      name: 'Middleware',
+      exercises: 7
+    }
+    ]
   }
+  ]
 
   return (
-    <Course course={course}/>
+    <div>
+      {courses.map((course) => <Course key={course.name} course={course}/>)}
+    </div>
   )
 }
 

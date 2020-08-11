@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import contactsSrv from './services/contacts'
 
-const People = ({persons, searchName}) => {
+const People = ({persons, searchName, onDelete}) => {
   const filtered = persons.filter((person) => {
     return  searchName.length === 0 || 
             person.name.match(new RegExp(`${searchName}+`, "i")) !== null
@@ -10,7 +10,10 @@ const People = ({persons, searchName}) => {
   return (
     <div>
       <h2>Numbers</h2>
-      {filtered.map((person) => <div key={person.name}>{person.name} {person.number}</div>)}
+      {filtered.map((person) => 
+        <div key={person.name}>
+          {person.name} {person.number} <button pid={person.id} onClick={() => onDelete(person)}>delete</button>
+        </div>)}
     </div>)
 
 }
@@ -50,28 +53,42 @@ const App = () => {
   const [ searchName, setSearchName] = useState('')
   
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
-    .then((response) => setPersons(response.data))
+    contactsSrv.getAll().then((response) => setPersons(response))
   }, [])
 
   const nameChangeHandler = (event) => setNewName(event.target.value)
   const numberChangeHandler = (event) => setNewNumber(event.target.value)
   const searchChangeHandler = (event) => setSearchName(event.target.value)
 
+  const deletePersonHandler = (p) => {
+    if(window.confirm(`Delete ${p.name}?`)) {
+      contactsSrv.remove(p.id).then(() => console.log(`Removed ${p.name}`))
+      setPersons(persons.filter((e) => e.id !== p.id))
+    }
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
 
-    if(persons.findIndex((p) => p.name === newName) !== -1)
-      alert(`${newName} already exists`)
-    else 
-      setPersons(persons.concat({name: newName, number: newNumber}))
+    const i = persons.findIndex((p) => p.name === newName)
+    if(i !== -1) {
+      if (window.confirm(`${newName} already exists, do you want update the number?`)) {
+        const newObj = {name: newName, number: newNumber}
+        const pid = persons[i].id
+        contactsSrv.update(pid, newObj).then((response) => setPersons(persons.filter((p) => p.id !== pid).concat(response)))
+      }
+
+    } else {
+      const newPersonObj = {name: newName, number: newNumber}
+      contactsSrv.create(newPersonObj).then((response) => {setPersons(persons.concat(response))})
+    }
   }
 
   return (
     <div>
       <Search onChange={searchChangeHandler}/>
       <Form onSubmit={addPerson} onNameChange={nameChangeHandler} onNumberChange={numberChangeHandler}/>
-      <People persons={persons} searchName={searchName}/>
+      <People persons={persons} searchName={searchName} onDelete={deletePersonHandler}/>
     </div>
   )
 }

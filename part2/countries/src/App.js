@@ -1,6 +1,38 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 
+const Weather = ({city}) => {
+  const [weather, setWeather] = useState(null)
+  
+  useEffect(() => {
+    const api_key = process.env.REACT_APP_API_KEY
+    const baseURL = "http://api.weatherstack.com/current"
+
+    const request = axios.get(`${baseURL}?access_key=${api_key}&query=${city}&units=m`)
+    request.then((response) => {
+
+      const weatherData = {
+        name: response.data.location.name,
+        icon: response.data.current.weather_icons[0],
+        desc: response.data.current.weather_descriptions[0],
+        temp: response.data.current.temperature,
+        wind_speed: response.data.current.wind_speed,
+        wind_dir: response.data.current.wind_dir}
+      setWeather(weatherData)
+    })
+  }, [city])
+
+  if(weather === null) return null
+  else return (
+  <div>
+  <h2>Weather in {weather.name} right now</h2>
+  <p>{weather.desc}</p>
+  <img src={weather.icon} alt="Weather icon"/>
+  <p>Temperature: {weather.temp} Celcius</p>
+  <p>Wind: {weather.wind_speed} kmph towards {weather.wind_dir}</p>
+  </div>)
+}
+
 const Results = ({countries, clickHandler}) => {
   if (countries.length > 10)
     return (<div>Too many results, be more specific</div>)
@@ -26,6 +58,7 @@ const Results = ({countries, clickHandler}) => {
         <p>Population: {country.population}</p>
         <h2>Languages</h2>
         <ul>{country.languages.map((lang) => <li key={country.name+lang.name}>{lang.name}</li>)}</ul>
+        <Weather city={country.capital}/>
       </div>
     )
   } else return (<div>No results found</div>)
